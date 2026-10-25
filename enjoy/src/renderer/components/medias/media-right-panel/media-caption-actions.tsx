@@ -18,7 +18,6 @@ import {
   CopyIcon,
   CheckIcon,
   SpeechIcon,
-  NotebookPenIcon,
   DownloadIcon,
   PlusIcon,
   XIcon,
@@ -34,11 +33,8 @@ export const MediaCaptionActions = (props: {
   caption: TimelineEntry;
   displayIpa: boolean;
   setDisplayIpa: (display: boolean) => void;
-  displayNotes: boolean;
-  setDisplayNotes: (display: boolean) => void;
 }) => {
-  const { caption, displayIpa, setDisplayIpa, displayNotes, setDisplayNotes } =
-    props;
+  const { caption, displayIpa, setDisplayIpa } = props;
   const { media, currentSegment, createSegment, transcription, activeRegion } =
     useContext(MediaShadowProviderContext);
   const { EnjoyApp, learningLanguage, ipaMappings } = useContext(
@@ -177,18 +173,6 @@ export const MediaCaptionActions = (props: {
             onClick={() => setDisplayIpa(!displayIpa)}
           >
             <SpeechIcon className="w-4 h-4" />
-          </Button>
-
-          <Button
-            variant={displayNotes ? "secondary" : "outline"}
-            size="icon"
-            className="rounded-full w-8 h-8 p-0"
-            data-tooltip-id="media-shadow-tooltip"
-            data-tooltip-content={t("displayNotes")}
-            data-tooltip-place="left"
-            onClick={() => setDisplayNotes(!displayNotes)}
-          >
-            <NotebookPenIcon className="w-4 h-4" />
           </Button>
 
           <ConversationShortcuts

@@ -35,7 +35,6 @@ import {
   XIcon,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const INSTALL_URL = "https://1000h.org/enjoy-app/install.html";
 
@@ -51,7 +50,6 @@ export const TitleBar = () => {
     AppSettingsProviderContext
   );
   const { active, setActive } = useContext(CopilotProviderContext);
-  const navigate = useNavigate();
 
   const checkUpdate = () => {
     if (platform === "linux") {
@@ -108,14 +106,6 @@ export const TitleBar = () => {
       EnjoyApp.app.removeUpdaterListeners();
     };
   }, []);
-
-  useEffect(() => {
-    if (quiting) {
-      EnjoyApp.view.hide();
-    } else {
-      EnjoyApp.view.show();
-    }
-  }, [quiting]);
 
   return (
     <div className="z-[100] h-8 w-full bg-muted draggable-region flex items-center justify-between border-b">
@@ -189,12 +179,6 @@ export const TitleBar = () => {
                 <ExternalLinkIcon className="size-4" />
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuItem
-              onClick={() => navigate("/community")}
-              className="flex justify-between space-x-4"
-            >
-              <span>{t("feedback")}</span>
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem disabled>
               <span className="text-xs text-muted-foreground">v{version}</span>

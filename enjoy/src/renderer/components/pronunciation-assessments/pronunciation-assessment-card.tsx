@@ -17,13 +17,11 @@ export const PronunciationAssessmentCard = (props: {
   pronunciationAssessment: PronunciationAssessmentType;
   onSelect: (assessment: PronunciationAssessmentType) => void;
   onDelete: (assessment: PronunciationAssessmentType) => void;
-  onSharing: (recording: RecordingType) => void;
 }) => {
   const {
     pronunciationAssessment: assessment,
     onSelect,
     onDelete,
-    onSharing,
   } = props;
 
   return (
@@ -45,7 +43,7 @@ export const PronunciationAssessmentCard = (props: {
             <div className="flex items-center gap-2 mb-4">
               <span className="text-sm">{t("source")}:</span>
               <Link
-                to={`/${assessment.target.targetType.toLowerCase()}s/${
+                to={`/practice/${assessment.target.targetType.toLowerCase()}/${
                   assessment.target.targetId
                 }?segmentIndex=${assessment.target.referenceId}`}
                 className="text-sm"
@@ -91,13 +89,6 @@ export const PronunciationAssessmentCard = (props: {
               size="sm"
             >
               {t("detail")}
-            </Button>
-            <Button
-              onClick={() => onSharing(assessment.target)}
-              variant="outline"
-              size="sm"
-            >
-              {t("share")}
             </Button>
           </div>
         </div>

@@ -30,7 +30,7 @@ export default () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to={`/audios`}>{t("sidebar.audios")}</Link>
+              <Link to={`/practice`}>{t("sidebar.practice")}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -43,7 +43,7 @@ export default () => {
       </Breadcrumb>
 
       <div className="flex-1">
-        <MediaShadowProvider onCancel={() => navigate("/audios")}>
+          <MediaShadowProvider onCancel={() => navigate("/practice")}>
           <AudioPlayer
             id={id}
             segmentIndex={parseInt(segmentIndex)}

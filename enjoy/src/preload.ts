@@ -136,105 +136,9 @@ contextBridge.exposeInMainWorld("__ENJOY_APP__", {
       },
     },
   },
-  providers: {
-    audible: {
-      categories: () => {
-        return ipcRenderer.invoke("audible-provider-categories");
-      },
-      bestsellers: (params: {
-        category?: string;
-        page?: number;
-        pageSize?: number;
-      }) => {
-        return ipcRenderer.invoke("audible-provider-bestsellers", params);
-      },
-    },
-    ted: {
-      talks: () => {
-        return ipcRenderer.invoke("ted-provider-talks");
-      },
-      ideas: () => {
-        return ipcRenderer.invoke("ted-provider-ideas");
-      },
-      downloadTalk: (url: string) => {
-        return ipcRenderer.invoke("ted-provider-download-talk", url);
-      },
-    },
-    youtube: {
-      videos: (channel: string) => {
-        return ipcRenderer.invoke("youtube-provider-videos", channel);
-      },
-    },
-  },
-  view: {
-    load: (
-      url: string,
-      bounds?: { x: number; y: number; width: number; height: number },
-      options?: { navigatable?: boolean }
-    ) => {
-      return ipcRenderer.invoke("view-load", url, bounds, options);
-    },
-    hide: () => {
-      return ipcRenderer.invoke("view-hide");
-    },
-    remove: () => {
-      return ipcRenderer.invoke("view-remove");
-    },
-    show: (bounds?: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    }) => {
-      return ipcRenderer.invoke("view-show", bounds);
-    },
-    scrape: (url: string) => {
-      return ipcRenderer.invoke("view-scrape", url);
-    },
-    resize: (bounds: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    }) => {
-      return ipcRenderer.invoke("view-resize", bounds);
-    },
-    loadCommunity: (
-      url: string,
-      bounds: { x: number; y: number; width: number; height: number },
-      options?: { navigatable?: boolean; accessToken?: string }
-    ) => {
-      return ipcRenderer.invoke("view-load-community", url, bounds, options);
-    },
-    onViewState: (
-      callback: (
-        event: IpcRendererEvent,
-        state: { state: string; error?: string; url?: string; html?: string }
-      ) => void
-    ) => ipcRenderer.on("view-on-state", callback),
-    removeViewStateListeners: () => {
-      ipcRenderer.removeAllListeners("view-on-state");
-    },
-  },
   onNotification: (
     callback: (event: IpcRendererEvent, notification: NotificationType) => void
   ) => ipcRenderer.on("on-notification", callback),
-  lookup: (
-    selection: string,
-    context: string,
-    position: { x: number; y: number }
-  ) => ipcRenderer.emit("on-lookup", null, selection, context, position),
-  onLookup: (
-    callback: (
-      event: IpcRendererEvent,
-      selection: string,
-      context: string,
-      position: { x: number; y: number }
-    ) => void
-  ) => ipcRenderer.on("on-lookup", callback),
-  offLookup: () => {
-    ipcRenderer.removeAllListeners("on-lookup");
-  },
   onTranslate: (
     callback: (
       event: IpcRendererEvent,
@@ -321,28 +225,6 @@ contextBridge.exposeInMainWorld("__ENJOY_APP__", {
     removeListeners: () => {
       ipcRenderer.removeAllListeners("db-on-transaction");
     },
-  },
-  camdict: {
-    lookup: (word: string) => {
-      return ipcRenderer.invoke("camdict-lookup", word);
-    },
-  },
-  mdict: {
-    remove: (dict: Dict) => ipcRenderer.invoke("mdict-remove", dict),
-    getResource: (key: string, dict: Dict) =>
-      ipcRenderer.invoke("mdict-read-file", key, dict),
-    lookup: (word: string, dict: Dict) =>
-      ipcRenderer.invoke("mdict-lookup", word, dict),
-    import: (pathes: string[]) => ipcRenderer.invoke("mdict-import", pathes),
-  },
-  dict: {
-    getDicts: () => ipcRenderer.invoke("dict-list"),
-    remove: (dict: Dict) => ipcRenderer.invoke("dict-remove", dict),
-    getResource: (key: string, dict: Dict) =>
-      ipcRenderer.invoke("dict-read-file", key, dict),
-    lookup: (word: string, dict: Dict) =>
-      ipcRenderer.invoke("dict-lookup", word, dict),
-    import: (path: string) => ipcRenderer.invoke("dict-import", path),
   },
   audios: {
     findAll: (params: {
@@ -682,34 +564,6 @@ contextBridge.exposeInMainWorld("__ENJOY_APP__", {
       return ipcRenderer.invoke("segments-sync", id);
     },
   },
-  notes: {
-    groupByTarget: (params?: { limit?: number; offset?: number }) => {
-      return ipcRenderer.invoke("notes-group-by-target", params);
-    },
-    groupBySegment: (targetId: string, targetType: string) => {
-      return ipcRenderer.invoke("notes-group-by-segment", targetId, targetType);
-    },
-    findAll: (params: {
-      targetId?: string;
-      targetType?: string;
-      offset?: number;
-      limit?: number;
-    }) => {
-      return ipcRenderer.invoke("notes-find-all", params);
-    },
-    update: (id: string, params: any) => {
-      return ipcRenderer.invoke("notes-update", id, params);
-    },
-    delete: (id: string) => {
-      return ipcRenderer.invoke("notes-delete", id);
-    },
-    create: (params: any) => {
-      return ipcRenderer.invoke("notes-create", params);
-    },
-    sync: (id: string) => {
-      return ipcRenderer.invoke("notes-sync", id);
-    },
-  },
   chats: {
     findAll: (params: { query?: string; offset?: number; limit?: number }) => {
       return ipcRenderer.invoke("chats-find-all", params);
@@ -780,29 +634,6 @@ contextBridge.exposeInMainWorld("__ENJOY_APP__", {
     },
     destroy: (id: string) => {
       return ipcRenderer.invoke("chat-messages-destroy", id);
-    },
-  },
-  documents: {
-    findAll: (params: any) => {
-      return ipcRenderer.invoke("documents-find-all", params);
-    },
-    findOne: (params: any) => {
-      return ipcRenderer.invoke("documents-find-one", params);
-    },
-    create: (params: any) => {
-      return ipcRenderer.invoke("documents-create", params);
-    },
-    update: (id: string, params: any) => {
-      return ipcRenderer.invoke("documents-update", id, params);
-    },
-    destroy: (id: string) => {
-      return ipcRenderer.invoke("documents-destroy", id);
-    },
-    upload: (id: string) => {
-      return ipcRenderer.invoke("documents-upload", id);
-    },
-    cleanUp: () => {
-      return ipcRenderer.invoke("documents-clean-up");
     },
   },
 });

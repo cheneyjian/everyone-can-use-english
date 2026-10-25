@@ -16,25 +16,17 @@ import {
 import {
   SettingsIcon,
   HomeIcon,
-  HeadphonesIcon,
-  VideoIcon,
-  NewspaperIcon,
-  BookMarkedIcon,
-  UserIcon,
   BotIcon,
-  UsersRoundIcon,
   LucideIcon,
-  NotebookPenIcon,
   SpeechIcon,
-  GraduationCapIcon,
-  MessagesSquareIcon,
+  HeadphonesIcon,
   PanelLeftOpenIcon,
   PanelLeftCloseIcon,
   ChevronsUpDownIcon,
   LogOutIcon,
   CreditCardIcon,
 } from "lucide-react";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { t } from "i18next";
 import { Preferences } from "@renderer/components";
 import { AppSettingsProviderContext } from "@renderer/context";
@@ -77,14 +69,6 @@ export const Sidebar = (props: {
     });
   }, []);
 
-  useEffect(() => {
-    if (displayPreferences) {
-      EnjoyApp.view.hide();
-    } else {
-      EnjoyApp.view.show();
-    }
-  }, [displayPreferences]);
-
   return (
     <div
       className={`h-content pt-8 transition-all relative draggable-region ${
@@ -113,63 +97,16 @@ export const Sidebar = (props: {
               isCollapsed={isCollapsed}
             />
 
-            <SidebarItem
-              href="/chats"
-              label={t("sidebar.chats")}
-              tooltip={t("sidebar.chats")}
-              active={activeTab.startsWith("/chats")}
-              Icon={MessagesSquareIcon}
-              isCollapsed={isCollapsed}
-            />
-
-            <SidebarItem
-              href="/courses"
-              label={t("sidebar.courses")}
-              tooltip={t("sidebar.courses")}
-              active={activeTab.startsWith("/courses")}
-              Icon={GraduationCapIcon}
-              isCollapsed={isCollapsed}
-            />
-
-            <SidebarItem
-              href="/community"
-              label={t("sidebar.community")}
-              tooltip={t("sidebar.community")}
-              active={activeTab.startsWith("/community")}
-              Icon={UsersRoundIcon}
-              isCollapsed={isCollapsed}
-            />
-
             <Separator />
 
             <SidebarItem
-              href="/audios"
-              label={t("sidebar.audios")}
-              tooltip={t("sidebar.audios")}
-              active={activeTab.startsWith("/audios")}
+              href="/practice"
+              label={t("sidebar.practice")}
+              tooltip={t("sidebar.practice")}
+              active={activeTab.startsWith("/practice")}
               Icon={HeadphonesIcon}
               isCollapsed={isCollapsed}
             />
-
-            <SidebarItem
-              href="/videos"
-              label={t("sidebar.videos")}
-              tooltip={t("sidebar.videos")}
-              active={activeTab.startsWith("/videos")}
-              Icon={VideoIcon}
-              isCollapsed={isCollapsed}
-            />
-
-            <SidebarItem
-              href="/documents"
-              label={t("sidebar.documents")}
-              tooltip={t("sidebar.documents")}
-              active={activeTab.startsWith("/documents")}
-              Icon={NewspaperIcon}
-              isCollapsed={isCollapsed}
-            />
-
-            <Separator />
 
             <SidebarItem
               href="/conversations"
@@ -188,24 +125,6 @@ export const Sidebar = (props: {
               active={activeTab.startsWith("/pronunciation_assessments")}
               Icon={SpeechIcon}
               testid="sidebar-pronunciation-assessments"
-              isCollapsed={isCollapsed}
-            />
-
-            <SidebarItem
-              href="/notes"
-              label={t("sidebar.notes")}
-              tooltip={t("sidebar.notes")}
-              active={activeTab === "/notes"}
-              Icon={NotebookPenIcon}
-              isCollapsed={isCollapsed}
-            />
-
-            <SidebarItem
-              href="/vocabulary"
-              label={t("sidebar.vocabulary")}
-              tooltip={t("sidebar.vocabulary")}
-              active={activeTab.startsWith("/vocabulary")}
-              Icon={BookMarkedIcon}
               isCollapsed={isCollapsed}
             />
 
@@ -311,7 +230,6 @@ const SidebarHeader = (props: { isCollapsed: boolean }) => {
     AppSettingsProviderContext
   );
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (open) {
@@ -356,14 +274,6 @@ const SidebarHeader = (props: { isCollapsed: boolean }) => {
           align="start"
           side="bottom"
         >
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onSelect={() => navigate("/profile")}
-          >
-            <span>{t("sidebar.profile")}</span>
-            <UserIcon className="size-4 ml-auto" />
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem
             onSelect={() => setDisplayDepositDialog(true)}
             className="cursor-pointer"

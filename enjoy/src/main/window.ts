@@ -1,7 +1,6 @@
 import {
   app,
   BrowserWindow,
-  WebContentsView,
   Menu,
   ipcMain,
   shell,
@@ -16,14 +15,10 @@ import settings from "@main/settings";
 import downloader from "@main/downloader";
 import fs from "fs-extra";
 import log from "@main/logger";
-import { DISCUSS_URL, REPO_URL, WEB_API_URL, WS_URL } from "@/constants";
-import { AudibleProvider, TedProvider, YoutubeProvider } from "@main/providers";
+import { REPO_URL, WS_URL } from "@/constants";
 import Ffmpeg from "@main/ffmpeg";
 import { Waveform } from "./waveform";
 import echogarden from "./echogarden";
-import camdict from "./camdict";
-import dict from "./dict";
-import mdict from "./mdict";
 import decompresser from "./decompresser";
 import { UserSetting } from "@main/db/models";
 import { t } from "i18next";
@@ -34,9 +29,6 @@ const __dirname = import.meta.dirname;
 
 const logger = log.scope("window");
 
-const audibleProvider = new AudibleProvider();
-const tedProvider = new TedProvider();
-const youtubeProvider = new YoutubeProvider();
 const ffmpeg = new Ffmpeg();
 const waveform = new Waveform();
 
@@ -73,10 +65,6 @@ main.init = async () => {
   // Prepare local database
   db.registerIpcHandlers();
 
-  camdict.registerIpcHandlers();
-  dict.registerIpcHandlers();
-  mdict.registerIpcHandlers();
-
   // Prepare Settings
   settings.registerIpcHandlers();
 
@@ -93,15 +81,6 @@ main.init = async () => {
 
   // ffmpeg
   ffmpeg.registerIpcHandlers();
-
-  // AudibleProvider
-  audibleProvider.registerIpcHandlers();
-
-  // TedProvider
-  tedProvider.registerIpcHandlers();
-
-  // YoutubeProvider
-  youtubeProvider.registerIpcHandlers();
 
   // proxy
   ipcMain.handle("system-proxy-get", (_event) => {
@@ -153,307 +132,6 @@ main.init = async () => {
       });
       mainWindow.webContents.session.closeAllConnections();
     }
-  });
-
-  // BrowserView
-  ipcMain.handle(
-    "view-load",
-    (
-      event,
-      url,
-      bounds: { x: number; y: number; width: number; height: number },
-      options?: {
-        navigatable?: boolean;
-      }
-    ) => {
-      const {
-        x = 0,
-        y = 0,
-        width = mainWindow.getBounds().width,
-        height = mainWindow.getBounds().height,
-      } = bounds;
-      const { navigatable = false } = options || {};
-
-      logger.debug("view-load", url);
-      const view = new WebContentsView();
-      mainWindow.contentView.addChildView(view);
-
-      view.setBounds({
-        x: Math.round(x),
-        y: Math.round(y),
-        width: Math.round(width),
-        height: Math.round(height),
-      });
-
-      view.webContents.on("did-navigate", (_event, url) => {
-        event.sender.send("view-on-state", {
-          state: "did-navigate",
-          url,
-        });
-      });
-      view.webContents.on(
-        "did-fail-load",
-        (_event, _errorCode, errrorDescription, validatedURL) => {
-          event.sender.send("view-on-state", {
-            state: "did-fail-load",
-            error: errrorDescription,
-            url: validatedURL,
-          });
-          (view.webContents as any).destroy();
-          mainWindow.contentView.removeChildView(view);
-        }
-      );
-      view.webContents.on("did-finish-load", () => {
-        view.webContents
-          .executeJavaScript(`document.documentElement.innerHTML`)
-          .then((html) => {
-            event.sender.send("view-on-state", {
-              state: "did-finish-load",
-              html,
-            });
-          });
-      });
-
-      view.webContents.on("will-redirect", (detail) => {
-        event.sender.send("view-on-state", {
-          state: "will-redirect",
-          url: detail.url,
-        });
-
-        logger.debug("will-redirect", detail.url);
-      });
-
-      view.webContents.on("will-navigate", (detail) => {
-        event.sender.send("view-on-state", {
-          state: "will-navigate",
-          url: detail.url,
-        });
-
-        logger.debug("will-navigate", detail.url);
-        if (!navigatable) {
-          logger.debug("prevent navigation", detail.url);
-          detail.preventDefault();
-        }
-      });
-      view.webContents.loadURL(url);
-    }
-  );
-  
-  ipcMain.handle(
-    "view-load-community",
-    (
-      event,
-      bounds: { x: number; y: number; width: number; height: number },
-      options?: {
-        navigatable?: boolean;
-        accessToken?: string;
-        url?: string;
-        ssoUrl?: string;
-      }
-    ) => {
-      const {
-        x = 0,
-        y = 0,
-        width = mainWindow.getBounds().width,
-        height = mainWindow.getBounds().height,
-      } = bounds;
-      const { navigatable = false, accessToken, url = `${DISCUSS_URL}/login`, ssoUrl = `${WEB_API_URL}/discourse/sso` } = options || {};
-
-      logger.debug("view-load-community", url);
-      const view = new WebContentsView();
-      mainWindow.contentView.addChildView(view);
-
-      view.setBounds({
-        x: Math.round(x),
-        y: Math.round(y),
-        width: Math.round(width),
-        height: Math.round(height),
-      });
-
-      view.webContents.on("did-navigate", (_event, url) => {
-        event.sender.send("view-on-state", {
-          state: "did-navigate",
-          url,
-        });
-      });
-      view.webContents.on(
-        "did-fail-load",
-        (_event, _errorCode, errrorDescription, validatedURL) => {
-          event.sender.send("view-on-state", {
-            state: "did-fail-load",
-            error: errrorDescription,
-            url: validatedURL,
-          });
-          (view.webContents as any).destroy();
-          mainWindow.contentView.removeChildView(view);
-        }
-      );
-
-      view.webContents.on("will-redirect", (details) => {
-        const { url } = details;
-        event.sender.send("view-on-state", {
-          state: "will-redirect",
-          url,
-        });
-        // Login via SSO
-        if (url.includes(ssoUrl)) {
-          details.preventDefault();
-          // Auto login using access token
-          view.webContents.loadURL(url, {
-            extraHeaders: `Authorization: Bearer ${accessToken}\n`,
-          });
-          logger.debug("loading", url, "accessToken:", accessToken);
-        } else {
-          logger.debug("will-redirect", url);
-        }
-      });
-
-      view.webContents.on("will-navigate", (details) => {
-        const { url } = details;
-        event.sender.send("view-on-state", {
-          state: "will-navigate",
-          url,
-        });
-
-        logger.debug("will-navigate", url);
-
-        // Open in browser if not navigatable
-        if (!navigatable) {
-          logger.debug("prevent navigation", url);
-          details.preventDefault();
-          shell.openExternal(url);
-        }
-      });
-      view.webContents.loadURL(url);
-    }
-  );
-
-  ipcMain.handle("view-resize", (_event, bounds: { x: number; y: number; width: number; height: number }) => {
-    logger.debug("view-resize", bounds);
-    const view = mainWindow.contentView.children[0];
-    if (!view) return;
-
-    view.setBounds({
-      x: Math.round(bounds.x),
-      y: Math.round(bounds.y),
-      width: Math.round(bounds.width),
-      height: Math.round(bounds.height),
-    });
-  });
-
-  ipcMain.handle("view-remove", () => {
-    logger.debug("view-remove");
-    mainWindow.contentView.children.forEach((view) => {
-      mainWindow.contentView.removeChildView(view);
-    });
-  });
-
-  ipcMain.handle("view-hide", () => {
-    logger.debug("view-hide");
-    const view = mainWindow.contentView.children[0];
-    if (!view) return;
-
-    view.setVisible(false);
-  });
-
-  ipcMain.handle(
-    "view-show",
-    (
-      _event,
-      bounds?: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-      }
-    ) => {
-      const view = mainWindow.contentView.children[0];
-      if (!view) return;
-
-      logger.debug("view-show", bounds);
-      view.setVisible(true);
-      if (bounds) {
-        view.setBounds(bounds);
-      }
-    }
-  );
-
-  ipcMain.handle("view-scrape", (event, url) => {
-    logger.debug("view-scrape", url);
-    const view = new WebContentsView();
-    view.setVisible(false);
-    mainWindow.contentView.addChildView(view);
-
-    // Add timeout handler
-    const timeout = setTimeout(() => {
-      logger.debug("view-scrape timeout", url);
-      event.sender.send("view-on-state", {
-        state: "did-fail-load",
-        error: "Request timed out",
-        url: url,
-      });
-      (view.webContents as any)?.destroy();
-      mainWindow.contentView.removeChildView(view);
-    }, 30000); // 30 second timeout
-
-    view.webContents.on("did-start-loading", () => {
-      logger.debug("view-scrape did-start-loading", url);
-    });
-
-    view.webContents.on("did-stop-loading", () => {
-      logger.debug("view-scrape did-stop-loading", url);
-    });
-
-    view.webContents.on("dom-ready", () => {
-      logger.debug("view-scrape dom-ready", url);
-    });
-
-    view.webContents.on("did-navigate", (_event, url) => {
-      clearTimeout(timeout);
-      event.sender.send("view-on-state", {
-        state: "did-navigate",
-        url,
-      });
-    });
-    view.webContents.on(
-      "did-fail-load",
-      (_event, _errorCode, errrorDescription, validatedURL) => {
-        clearTimeout(timeout);
-        event.sender.send("view-on-state", {
-          state: "did-fail-load",
-          error: errrorDescription,
-          url: validatedURL,
-        });
-        (view.webContents as any).destroy();
-        mainWindow.contentView.removeChildView(view);
-      }
-    );
-    view.webContents.on("did-finish-load", () => {
-      clearTimeout(timeout);
-      logger.debug("view-scrape did-finish-load", url);
-      view.webContents
-        .executeJavaScript(`document.documentElement.innerHTML`)
-        .then((html) => {
-          event.sender.send("view-on-state", {
-            state: "did-finish-load",
-            html,
-            url,
-          });
-          (view.webContents as any).destroy();
-          mainWindow.contentView.removeChildView(view);
-        });
-    });
-
-    view.webContents.loadURL(url).catch((err) => {
-      logger.error("view-scrape loadURL error", err);
-      (view.webContents as any).destroy();
-      mainWindow.contentView.removeChildView(view);
-      event.sender.send("view-on-state", {
-        state: "did-fail-load",
-        error: err.message,
-        url: url,
-      });
-    });
   });
 
   // App options

@@ -52,8 +52,6 @@ type AppSettingsProviderState = {
   switchLearningLanguage?: (lang: string) => void;
   proxy?: ProxyConfigType;
   setProxy?: (config: ProxyConfigType) => Promise<void>;
-  vocabularyConfig?: VocabularyConfigType;
-  setVocabularyConfig?: (config: VocabularyConfigType) => Promise<void>;
   cable?: Consumer;
   ahoy?: typeof ahoy;
   recorderConfig?: RecorderConfigType;
@@ -67,6 +65,16 @@ type AppSettingsProviderState = {
 };
 
 const EnjoyApp = window.__ENJOY_APP__;
+
+// Local-only test mode. This flag is intentionally opt-in and is only honored
+// by Vite's development build so production packages always require login.
+export const DEV_BYPASS_AUTH_ENABLED =
+  import.meta.env.DEV && import.meta.env.VITE_DEV_BYPASS_AUTH === "true";
+const DEV_TEST_USER: UserType = {
+  id: "99999999",
+  name: "Local Test User",
+  balance: 1000,
+};
 
 const initialState: AppSettingsProviderState = {
   webApi: null,
@@ -93,8 +101,6 @@ export const AppSettingsProvider = ({
   const [language, setLanguage] = useState<"en" | "zh-CN">();
   const [nativeLanguage, setNativeLanguage] = useState<string>("zh-CN");
   const [learningLanguage, setLearningLanguage] = useState<string>("en-US");
-  const [vocabularyConfig, setVocabularyConfig] =
-    useState<VocabularyConfigType>(null);
   const [proxy, setProxy] = useState<ProxyConfigType>();
   const [recorderConfig, setRecorderConfig] = useState<RecorderConfigType>();
   const [ipaMappings, setIpaMappings] = useState<{ [key: string]: string }>(
@@ -161,6 +167,15 @@ export const AppSettingsProvider = ({
   };
 
   const autoLogin = async () => {
+    if (DEV_BYPASS_AUTH_ENABLED) {
+      await EnjoyApp.appSettings.setUser({
+        id: DEV_TEST_USER.id,
+        name: DEV_TEST_USER.name,
+      });
+      setUser(DEV_TEST_USER);
+      return;
+    }
+
     const currentUser = await EnjoyApp.appSettings.getUser();
     if (!currentUser) return;
 
@@ -243,23 +258,6 @@ export const AppSettingsProvider = ({
       });
   };
 
-  const fetchVocabularyConfig = async () => {
-    EnjoyApp.userSettings
-      .get(UserSettingKeyEnum.VOCABULARY)
-      .then((config) => {
-        setVocabularyConfig(config || { lookupOnMouseOver: true });
-      })
-      .catch((err) => {
-        console.error(err);
-        setVocabularyConfig({ lookupOnMouseOver: true });
-      });
-  };
-
-  const setVocabularyConfigHandler = async (config: VocabularyConfigType) => {
-    await EnjoyApp.userSettings.set(UserSettingKeyEnum.VOCABULARY, config);
-    setVocabularyConfig(config);
-  };
-
   const refreshAccount = async () => {
     webApi.me().then((u) => {
       setUser({
@@ -272,7 +270,6 @@ export const AppSettingsProvider = ({
   useEffect(() => {
     if (db.state === "connected") {
       fetchLanguages();
-      fetchVocabularyConfig();
       fetchRecorderConfig();
     }
   }, [db.state]);
@@ -312,6 +309,7 @@ export const AppSettingsProvider = ({
 
   useEffect(() => {
     if (!webApi) return;
+    if (DEV_BYPASS_AUTH_ENABLED) return;
     if (ipaMappings && latestVersion) return;
 
     webApi.config("ipa_mappings").then((mappings) => {
@@ -327,6 +325,11 @@ export const AppSettingsProvider = ({
     if (!user) return;
 
     db.connect().then(async () => {
+      if (DEV_BYPASS_AUTH_ENABLED && user.id === DEV_TEST_USER.id) {
+        await EnjoyApp.userSettings.set(UserSettingKeyEnum.PROFILE, user);
+        return;
+      }
+
       // Login via API, update profile to DB
       if (user.accessToken) {
         EnjoyApp.userSettings.set(UserSettingKeyEnum.PROFILE, user);
@@ -369,8 +372,6 @@ export const AppSettingsProvider = ({
         setLibraryPath: setLibraryPathHandler,
         proxy,
         setProxy: setProxyConfigHandler,
-        vocabularyConfig,
-        setVocabularyConfig: setVocabularyConfigHandler,
         initialized: Boolean(user && db.state === "connected" && libraryPath),
         ahoy,
         cable,

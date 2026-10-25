@@ -2,19 +2,14 @@ import { useContext } from "react";
 import {
   AppSettingsProviderContext,
   MediaShadowProviderContext,
-  DictProviderContext,
 } from "@renderer/context";
 import { TabsContent, Separator } from "@renderer/components/ui";
 import { t } from "i18next";
 import { TimelineEntry } from "echogarden/dist/utilities/Timeline.d.js";
 import { convertWordIpaToNormal } from "@/utils";
 import {
-  CamdictLookupResult,
-  DictLookupResult,
   AiLookupResult,
   TranslateResult,
-  DictSelect,
-  VocabularyPronunciationAssessment,
 } from "@renderer/components";
 
 /*
@@ -44,7 +39,6 @@ const SelectedWords = (props: {
 }) => {
   const { selectedIndices, caption } = props;
 
-  const { currentDictValue } = useContext(DictProviderContext);
   const { transcription } = useContext(MediaShadowProviderContext);
   const { learningLanguage, ipaMappings } = useContext(
     AppSettingsProviderContext
@@ -105,28 +99,17 @@ const SelectedWords = (props: {
             );
           })}
         </div>
-        <div className="w-60">
-          <DictSelect />
-        </div>
       </div>
-
-      <VocabularyPronunciationAssessment word={word} />
 
       <Separator className="my-4" />
 
       <div className="rounded-lg overflow-hidden mr-10">
-        {currentDictValue === "cambridge" ? (
-          <CamdictLookupResult word={word} />
-        ) : currentDictValue === "ai" ? (
-          <AiLookupResult
-            word={word}
-            context={caption.text}
-            sourceId={transcription.targetId}
-            sourceType={transcription.targetType}
-          />
-        ) : (
-          <DictLookupResult word={word} autoHeight={true} />
-        )}
+        <AiLookupResult
+          word={word}
+          context={caption.text}
+          sourceId={transcription.targetId}
+          sourceType={transcription.targetType}
+        />
       </div>
     </>
   );
