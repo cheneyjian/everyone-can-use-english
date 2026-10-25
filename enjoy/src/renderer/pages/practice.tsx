@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 import {
   ArrowRightIcon,
@@ -41,6 +42,9 @@ const PracticeCard = ({
 );
 
 export default function Practice() {
+  // Re-render when the saved UI language finishes loading
+  useTranslation();
+
   return (
     <div className="min-h-full max-w-5xl mx-auto px-4 py-8 lg:px-8">
       <div className="mb-8 max-w-2xl">

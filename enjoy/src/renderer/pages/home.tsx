@@ -12,10 +12,14 @@ import {
   CardTitle,
 } from "@renderer/components/ui";
 import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowRightIcon, BotIcon, HeadphonesIcon, Mic2Icon } from "lucide-react";
 
 export default () => {
+  // Re-render when the saved UI language finishes loading
+  useTranslation();
+
   return (
     <div className="w-full relative">
       <AuthorizationStatusBar />
