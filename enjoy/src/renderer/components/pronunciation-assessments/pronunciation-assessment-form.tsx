@@ -19,7 +19,7 @@ import {
   TabsContent,
 } from "@renderer/components/ui";
 import { t } from "i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AppSettingsProviderContext } from "@/renderer/context";
 import { LANGUAGES } from "@/constants";
@@ -48,6 +48,7 @@ const pronunciationAssessmentSchema = z.object({
 
 export const PronunciationAssessmentForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { EnjoyApp, learningLanguage } = useContext(AppSettingsProviderContext);
   const [submitting, setSubmitting] = useState(false);
   const { createAssessment } = usePronunciationAssessments();
@@ -56,7 +57,7 @@ export const PronunciationAssessmentForm = () => {
     resolver: zodResolver(pronunciationAssessmentSchema),
     values: {
       language: learningLanguage,
-      referenceText: "",
+      referenceText: location.state?.referenceText || "",
     },
   });
 
