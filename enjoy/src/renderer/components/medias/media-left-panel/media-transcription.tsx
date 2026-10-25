@@ -18,7 +18,6 @@ import {
   LoaderIcon,
   CheckCircleIcon,
   MicIcon,
-  PencilLineIcon,
   SquareMenuIcon,
   GaugeCircleIcon,
 } from "lucide-react";
@@ -52,14 +51,6 @@ export const MediaTranscription = (props: { display?: boolean }) => {
   const [recordingStats, setRecordingStats] =
     useState<SegementRecordingStatsType>([]);
 
-  const [notesStats, setNotesStats] = useState<
-    {
-      targetId: string;
-      targetType: string;
-      count: number;
-      segment: SegmentType;
-    }[]
-  >([]);
   const [_, copyToClipboard] = useCopyToClipboard();
 
   const fetchSegmentStats = async () => {
@@ -71,9 +62,6 @@ export const MediaTranscription = (props: { display?: boolean }) => {
         setRecordingStats(stats);
       });
 
-    EnjoyApp.notes.groupBySegment(media.id, media.mediaType).then((stats) => {
-      setNotesStats(stats);
-    });
   };
 
   const scrollToCurrentSegment = () => {
@@ -216,9 +204,6 @@ export const MediaTranscription = (props: { display?: boolean }) => {
                   stats={recordingStats}
                   referenceId={index}
                 />
-                {(notesStats || []).findIndex(
-                  (s) => s.segment?.segmentIndex === index
-                ) !== -1 && <PencilLineIcon className="w-3 h-3 text-sky-500" />}
                 <span className="text-xs opacity-50">
                   {formatDuration(sentence.startTime, "s")}
                 </span>

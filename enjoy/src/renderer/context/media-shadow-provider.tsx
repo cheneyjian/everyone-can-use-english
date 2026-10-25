@@ -5,7 +5,6 @@ import {
   useTranscriptions,
   useRecordings,
   useSegments,
-  useNotes,
 } from "@renderer/hooks";
 import WaveSurfer from "wavesurfer.js";
 import Regions, {
@@ -96,9 +95,6 @@ type MediaShadowContextType = {
   recordings: RecordingType[];
   fetchRecordings: (offset: number) => void;
   loadingRecordings: boolean;
-  // Notes
-  currentNotes: NoteType[];
-  createNote: (params: any) => void;
   // Segments
   currentSegment: SegmentType;
   createSegment: () => Promise<SegmentType | void>;
@@ -214,11 +210,6 @@ export const MediaShadowProvider = ({
     }-last-segment-index`;
     return EnjoyApp.cacheObjects.set(cachedId, index);
   };
-
-  const { notes, createNote } = useNotes({
-    targetId: segment?.id,
-    targetType: "Segment",
-  });
 
   const initializeWavesurfer = async () => {
     if (!media) return;
@@ -764,8 +755,6 @@ export const MediaShadowProvider = ({
           recordings,
           fetchRecordings,
           loadingRecordings,
-          currentNotes: notes,
-          createNote,
           currentSegment: segment,
           createSegment,
           getCachedSegmentIndex,

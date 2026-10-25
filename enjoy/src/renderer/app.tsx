@@ -4,14 +4,13 @@ import {
   AppSettingsProvider,
   DbProvider,
   HotKeysSettingsProvider,
-  DictProvider,
   CopilotProvider,
 } from "@renderer/context";
 import router from "./router";
 import { RouterProvider } from "react-router-dom";
 import { Toaster, toast } from "@renderer/components/ui";
 import { Tooltip } from "react-tooltip";
-import { LookupWidget, TranslateWidget } from "./components";
+import { TranslateWidget } from "./components";
 import Bugsnag from "@bugsnag/electron";
 import BugsnagPluginReact from "@bugsnag/plugin-react";
 import { Client } from "@/api";
@@ -61,15 +60,12 @@ function App() {
         <AppSettingsProvider>
           <HotKeysSettingsProvider>
             <AISettingsProvider>
-              <DictProvider>
-                <CopilotProvider>
-                  <RouterProvider router={router} />
-                </CopilotProvider>
-                <Toaster richColors closeButton position="top-center" />
-                <Tooltip id="global-tooltip" />
-                <TranslateWidget />
-                <LookupWidget />
-              </DictProvider>
+              <CopilotProvider>
+                <RouterProvider router={router} />
+              </CopilotProvider>
+              <Toaster richColors closeButton position="top-center" />
+              <Tooltip id="global-tooltip" />
+              <TranslateWidget />
             </AISettingsProvider>
           </HotKeysSettingsProvider>
         </AppSettingsProvider>

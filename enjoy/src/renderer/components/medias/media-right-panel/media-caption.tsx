@@ -1,8 +1,5 @@
-import { useState, useContext } from "react";
-import {
-  AppSettingsProviderContext,
-  MediaShadowProviderContext,
-} from "@renderer/context";
+import { useContext } from "react";
+import { AppSettingsProviderContext } from "@renderer/context";
 import { convertWordIpaToNormal } from "@/utils";
 import { TimelineEntry } from "echogarden/dist/utilities/Timeline.d.js";
 
@@ -13,26 +10,20 @@ export const MediaCaption = (props: {
   currentSegmentIndex: number;
   activeIndex?: number;
   displayIpa?: boolean;
-  displayNotes?: boolean;
   onClick?: (index: number) => void;
 }) => {
-  const { currentNotes } = useContext(MediaShadowProviderContext);
   const { learningLanguage, ipaMappings } = useContext(
     AppSettingsProviderContext
   );
-  const notes = currentNotes.filter((note) => note.parameters?.quoteIndices);
   const {
     caption,
     selectedIndices = [],
     currentSegmentIndex,
     activeIndex,
     displayIpa,
-    displayNotes,
     onClick,
   } = props;
   const language = props.language || learningLanguage;
-
-  const [notedquoteIndices, setNotedquoteIndices] = useState<number[]>([]);
 
   let words = caption.text
     .replace(/ ([.,!?:;])/g, "$1")
@@ -70,10 +61,6 @@ export const MediaCaption = (props: {
               onClick && "hover:bg-red-500/10 cursor-pointer"
             } ${index === activeIndex ? "text-red-500" : ""} ${
               selectedIndices.includes(index) ? "bg-red-500/10 selected" : ""
-            } ${
-              notedquoteIndices.includes(index)
-                ? "border-b border-red-500 border-dashed"
-                : ""
             }`}
             onClick={() => onClick && onClick(index)}
           >
@@ -94,24 +81,6 @@ export const MediaCaption = (props: {
             </div>
           )}
 
-          {displayNotes &&
-            notes
-              .filter((note) => note.parameters.quoteIndices[0] === index)
-              .map((note) => (
-                <div
-                  key={`note-${currentSegmentIndex}-${note.id}`}
-                  className="mb-1 text-xs 2xl:text-sm text-red-500 max-w-64 line-clamp-3 font-code cursor-pointer"
-                  onMouseOver={() =>
-                    setNotedquoteIndices(note.parameters.quoteIndices)
-                  }
-                  onMouseLeave={() => setNotedquoteIndices([])}
-                  onClick={() =>
-                    document.getElementById("note-" + note.id)?.scrollIntoView()
-                  }
-                >
-                  {note.parameters.quoteIndices[0] === index && note.content}
-                </div>
-              ))}
         </div>
       ))}
     </div>

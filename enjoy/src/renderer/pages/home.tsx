@@ -1,60 +1,90 @@
+import { useContext } from "react";
 import {
-  AudiosSegment,
-  AudibleBooksSegment,
-  DocumentsSegment,
-  VideosSegment,
-  YoutubeVideosSegment,
-  EnrollmentSegment,
-} from "@renderer/components";
-import { useContext, useEffect, useState } from "react";
-import { AppSettingsProviderContext } from "@renderer/context";
-import { Button } from "@renderer/components/ui";
+  AppSettingsProviderContext,
+  DEV_BYPASS_AUTH_ENABLED,
+} from "@renderer/context";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@renderer/components/ui";
 import { t } from "i18next";
-import semver from "semver";
-import { DOWNLOAD_URL } from "@/constants";
+import { Link } from "react-router-dom";
+import { ArrowRightIcon, BotIcon, HeadphonesIcon, Mic2Icon } from "lucide-react";
 
 export default () => {
-  const [channels, setChannels] = useState<string[]>([
-    "@TED",
-    "@CNN",
-    "@nytimes",
-  ]);
-
-  const { webApi } = useContext(AppSettingsProviderContext);
-
-  useEffect(() => {
-    if (!webApi) return;
-
-    webApi.config("ytb_channels").then((channels) => {
-      if (!channels) return;
-
-      setChannels(channels);
-    });
-  }, [webApi]);
-
   return (
     <div className="w-full relative">
       <AuthorizationStatusBar />
-      <UpgradeNotice />
-      <div className="max-w-5xl mx-auto px-4 py-6 lg:px-8">
-        <div className="space-y-4">
-          <EnrollmentSegment />
-          <AudiosSegment />
-          <VideosSegment />
-          <DocumentsSegment />
-          <AudibleBooksSegment />
-          {channels.map((channel) => (
-            <YoutubeVideosSegment key={channel} channel={channel} />
-          ))}
+      <div className="max-w-5xl mx-auto px-4 py-10 lg:px-8">
+        <div className="mb-10 max-w-2xl">
+          <div className="mb-2 text-sm font-medium text-primary">Enjoy</div>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            {t("homeTitle")}
+          </h1>
+          <p className="mt-3 text-muted-foreground">{t("homeDescription")}</p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <HomeAction
+            icon={HeadphonesIcon}
+            title={t("sidebar.practice")}
+            description={t("homePracticeDescription")}
+            href="/practice"
+          />
+          <HomeAction
+            icon={BotIcon}
+            title={t("sidebar.aiAssistant")}
+            description={t("homeAssistantDescription")}
+            href="/conversations"
+          />
+          <HomeAction
+            icon={Mic2Icon}
+            title={t("sidebar.pronunciationAssessment")}
+            description={t("homeAssessmentDescription")}
+            href="/pronunciation_assessments"
+          />
         </div>
       </div>
     </div>
   );
 };
+const HomeAction = ({
+  icon: Icon,
+  title,
+  description,
+  href,
+}: {
+  icon: typeof HeadphonesIcon;
+  title: string;
+  description: string;
+  href: string;
+}) => (
+  <Card className="h-full">
+    <CardHeader>
+      <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <Icon className="size-5" />
+      </div>
+      <CardTitle>{title}</CardTitle>
+      <CardDescription>{description}</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <Button asChild variant="outline">
+        <Link to={href}>
+          {t("open")}
+          <ArrowRightIcon className="ml-2 size-4" />
+        </Link>
+      </Button>
+    </CardContent>
+  </Card>
+);
 
 const AuthorizationStatusBar = () => {
   const { user, logout } = useContext(AppSettingsProviderContext);
-  if (!user) return null;
+  if (!user || DEV_BYPASS_AUTH_ENABLED) return null;
 
   if (!user.accessToken) {
     return (
@@ -73,32 +103,4 @@ const AuthorizationStatusBar = () => {
   }
 
   return null;
-};
-
-const UpgradeNotice = () => {
-  const { version, latestVersion, EnjoyApp } = useContext(
-    AppSettingsProviderContext
-  );
-  if (!latestVersion) return null;
-
-  // compare version with latestVersion by semver
-  if (semver.gte(version, latestVersion)) return null;
-
-  return (
-    <div className="bg-blue-500 text-white py-2 px-4 h-10 flex items-center sticky top-0">
-      <span className="text-sm">
-        {t("upgradeNotice", { version: latestVersion })}
-      </span>
-      <Button
-        variant="outline"
-        size="sm"
-        className="ml-2 py-1 px-2 text-xs h-auto w-auto"
-        onClick={() => {
-          EnjoyApp.shell.openExternal(DOWNLOAD_URL);
-        }}
-      >
-        {t("upgrade")}
-      </Button>
-    </div>
-  );
 };

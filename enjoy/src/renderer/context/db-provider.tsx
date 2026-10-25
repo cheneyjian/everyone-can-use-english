@@ -66,13 +66,7 @@ export const DbProvider = ({ children }: { children: React.ReactNode }) => {
       `path: ${path};\n`,
       `error: ${error};\n`
     );
-
-    if (state === "disconnected") {
-      setTimeout(() => {
-        connect();
-      }, 1000);
-    }
-  }, [state]);
+  }, [state, path, error]);
 
   const addDblistener = (callback: (event: CustomEvent) => void) => {
     document.addEventListener("db-on-transaction", callback);

@@ -42,7 +42,7 @@ export const TranslateWidget = () => {
       handleSelectionChanged(position);
     });
 
-    return () => EnjoyApp.offLookup();
+    return () => EnjoyApp.offTranslate();
   }, []);
 
   return (

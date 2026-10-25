@@ -13,7 +13,6 @@ import { MediaCaption, MediaCaptionActions } from "@renderer/components";
 import { t } from "i18next";
 import {
   MediaCaptionAnalysis,
-  MediaCaptionNote,
   MediaCaptionTranslation,
 } from "@renderer/components";
 import { cn } from "@renderer/lib/utils";
@@ -43,7 +42,6 @@ export const MediaRightPanel = (props: {
   const [multiSelecting, setMultiSelecting] = useState<boolean>(false);
 
   const [displayIpa, setDisplayIpa] = useState<boolean>(true);
-  const [displayNotes, setDisplayNotes] = useState<boolean>(true);
 
   const [tab, setTab] = useState<string>("translation");
 
@@ -211,18 +209,12 @@ export const MediaRightPanel = (props: {
                 <ArrowLeftRightIcon className="w-4 h-4" />
               </Button>
             )}
-            <TabsList className="grid grid-cols-3 gap-4 rounded-none w-full">
+            <TabsList className="grid grid-cols-2 gap-4 rounded-none w-full">
               <TabsTrigger
                 value="translation"
                 className="capitalize block truncate px-1"
               >
                 {t("captionTabs.translation")}
-              </TabsTrigger>
-              <TabsTrigger
-                value="note"
-                className="capitalize block truncate px-1"
-              >
-                {t("captionTabs.note")}
               </TabsTrigger>
               <TabsTrigger
                 value="analysis"
@@ -240,17 +232,10 @@ export const MediaRightPanel = (props: {
               currentSegmentIndex={currentSegmentIndex}
               activeIndex={activeIndex}
               displayIpa={displayIpa}
-              displayNotes={displayNotes}
               onClick={toggleSeletedIndex}
             />
 
             <div className="px-4 pb-10 min-h-32">
-              <MediaCaptionNote
-                currentSegmentIndex={currentSegmentIndex}
-                selectedIndices={selectedIndices}
-                setSelectedIndices={setSelectedIndices}
-              />
-
               <MediaCaptionTranslation
                 caption={caption}
                 selectedIndices={selectedIndices}
@@ -267,8 +252,6 @@ export const MediaRightPanel = (props: {
           caption={caption}
           displayIpa={displayIpa}
           setDisplayIpa={setDisplayIpa}
-          displayNotes={displayNotes}
-          setDisplayNotes={setDisplayNotes}
         />
       </div>
     </div>

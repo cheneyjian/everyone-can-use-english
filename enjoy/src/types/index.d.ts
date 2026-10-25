@@ -183,10 +183,6 @@ type ProxyConfigType = {
   url: string;
 };
 
-type VocabularyConfigType = {
-  lookupOnMouseOver: boolean;
-};
-
 type YoutubeVideoType = {
   title: string;
   thumbnail: string;
@@ -234,20 +230,6 @@ type RecorderConfigType = {
   noiseSuppression: boolean;
   sampleRate: number;
   sampleSize: number;
-};
-
-type DictType = "dict" | "mdict" | "preset";
-
-type DictItem = {
-  type: DictType;
-  text: string;
-  value: string;
-};
-
-type DictSettingType = {
-  default: string;
-  removing: string[];
-  mdicts: MDict[];
 };
 
 type TranscribeParamsType = {

@@ -53,84 +53,9 @@ type EnjoyAppType = {
       refresh: () => Promise<void>;
     };
   };
-  providers: {
-    audible: {
-      bestsellers: (params?: {
-        page?: number;
-        category?: number;
-        pageSize?: number;
-      }) => Promise<{
-        books: AudibleBookType[];
-        page: number;
-        nextPage: number | undefined;
-      }>;
-    };
-    ted: {
-      talks: () => Promise<TedTalkType[]>;
-      ideas: () => Promise<TedIdeaType[]>;
-      downloadTalk: (url: string) => Promise<{ audio: string; video: string }>;
-    };
-    youtube: {
-      videos: (channel: string) => Promise<YoutubeVideoType[]>;
-    };
-  };
-  view: {
-    load: (
-      url: string,
-      bounds?: {
-        x?: number;
-        y?: number;
-        width?: number;
-        height?: number;
-      },
-      options?: {
-        navigatable?: boolean;
-      }
-    ) => Promise<void>;
-    show: (bounds?: any) => Promise<void>;
-    hide: () => Promise<void>;
-    remove: () => Promise<void>;
-    scrape: (url: string) => Promise<void>;
-    loadCommunity: (
-      bounds: { x: number; y: number; width: number; height: number },
-      options?: {
-        navigatable?: boolean;
-        accessToken?: string;
-        url?: string;
-        ssoUrl?: string;
-      }
-    ) => Promise<void>;
-    resize: (bounds: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    }) => Promise<void>;
-    onViewState: (
-      callback: (
-        event,
-        state: { state: string; error?: string; url?: string; html?: string }
-      ) => void
-    ) => void;
-    removeViewStateListeners: () => void;
-  };
   onNotification: (
     callback: (event, notification: NotificationType) => void
   ) => void;
-  lookup: (
-    selection: string,
-    context: string,
-    position: { x: number; y: number }
-  ) => void;
-  onLookup: (
-    callback: (
-      event: IpcRendererEvent,
-      selection: string,
-      context: string,
-      position: { x: number; y: number }
-    ) => void
-  ) => void;
-  offLookup: () => void;
   onTranslate: (
     callback: (
       event,
@@ -138,6 +63,7 @@ type EnjoyAppType = {
       position: { x: number; y: number }
     ) => void
   ) => void;
+  offTranslate: () => void;
   shell: {
     openExternal: (url: string) => Promise<void>;
     openPath: (path: string) => Promise<void>;
@@ -183,22 +109,6 @@ type EnjoyAppType = {
       callback: (event, state: TransactionStateType) => void
     ) => Promise<void>;
     removeListeners: () => Promise<void>;
-  };
-  camdict: {
-    lookup: (word: string) => Promise<CamdictWordType | null>;
-  };
-  mdict: {
-    remove: (mdict: MDict) => Promise<void>;
-    getResource: (key: string, mdict: MDict) => Promise<string | null>;
-    lookup: (word: string, mdict: MDict) => Promise<string | null>;
-    import: (pathes: string[]) => Promise<MDict>;
-  };
-  dict: {
-    getDicts: () => Promise<Dict[]>;
-    remove: (dict: Dict) => Promise<void>;
-    getResource: (key: string, dict: Dict) => Promise<string | null>;
-    lookup: (word: string, dict: Dict) => Promise<string | null>;
-    import: (path: string) => Promise<void>;
   };
   audios: {
     findAll: (params: any) => Promise<AudioType[]>;
@@ -392,27 +302,6 @@ type EnjoyAppType = {
     }) => Promise<SegmentType>;
     sync: (id: string) => Promise<SegmentType>;
   };
-  notes: {
-    groupByTarget: (params: any) => Promise<any>;
-    groupBySegment: (targetId: string, targetType: string) => Promise<any>;
-    findAll: (params: any) => Promise<NoteType[]>;
-    find: (id: string) => Promise<NoteType>;
-    update: (
-      id: string,
-      params: {
-        content: string;
-        parameters?: any;
-      }
-    ) => Promise<NoteType>;
-    delete: (id: string) => Promise<void>;
-    create: (params: {
-      targetId: string;
-      targetType: string;
-      content: string;
-      parameters?: any;
-    }) => Promise<NoteType>;
-    sync: (id: string) => Promise<NoteType>;
-  };
   chats: {
     findAll: (params: any) => Promise<ChatType[]>;
     findOne: (params: any) => Promise<ChatType>;
@@ -440,14 +329,5 @@ type EnjoyAppType = {
     create: (params: any) => Promise<ChatMessageType>;
     update: (id: string, params: any) => Promise<ChatMessageType>;
     destroy: (id: string) => Promise<ChatMessageType>;
-  };
-  documents: {
-    findAll: (params?: any) => Promise<DocumentEType[]>;
-    findOne: (params: any) => Promise<DocumentEType>;
-    create: (params: any) => Promise<DocumentEType>;
-    update: (id: string, params: any) => Promise<DocumentEType>;
-    destroy: (id: string) => Promise<void>;
-    upload: (id: string) => Promise<void>;
-    cleanUp: () => Promise<void>;
   };
 };

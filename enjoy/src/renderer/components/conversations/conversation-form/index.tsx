@@ -38,7 +38,6 @@ import { useNavigate } from "react-router-dom";
 import {
   GPT_PROVIDERS,
   TTS_PROVIDERS,
-  GPTShareButton,
   ConversationFormGPT,
   ConversationFormTTS,
 } from "@renderer/components";
@@ -309,7 +308,6 @@ export const ConversationForm = (props: {
           <div className="text-lg font-bold">
             {conversation.id ? t("editConversation") : t("startConversation")}
           </div>
-          <GPTShareButton conversation={conversation} />
         </div>
         <ScrollArea className="flex-1 px-4">
           <div className="space-y-4 px-2 mb-6">

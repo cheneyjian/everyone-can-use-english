@@ -19,8 +19,6 @@ import {
   LearningLanguageSettings,
   NetworkState,
   RecorderSettings,
-  VocabularySettings,
-  DictSettings,
   DiskUsage,
 } from "@renderer/components";
 import { useState } from "react";
@@ -46,21 +44,6 @@ export const Preferences = () => {
           <TtsSettings />
           <Separator />
           <DefaultEngineSettings />
-          <Separator />
-        </div>
-      ),
-    },
-    {
-      value: "dict",
-      label: t("dictSettingsShort"),
-      component: () => (
-        <div className="pr-1">
-          <div className="font-semibold mb-4 capitilized">
-            {t("dictSettings")}
-          </div>
-          <VocabularySettings />
-          <Separator />
-          <DictSettings />
           <Separator />
         </div>
       ),
