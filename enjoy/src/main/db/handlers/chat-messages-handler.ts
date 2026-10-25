@@ -64,7 +64,7 @@ class ChatMessagesHandler {
         const recording = await Recording.createFromBlob(
           {
             type: "audio/wav",
-            arrayBuffer: blob,
+            arrayBuffer: new Uint8Array(blob).buffer,
           },
           {
             targetType: "ChatMessage",
@@ -113,7 +113,7 @@ class ChatMessagesHandler {
         await Recording.createFromBlob(
           {
             type: "audio/wav",
-            arrayBuffer: blob,
+            arrayBuffer: new Uint8Array(blob).buffer,
           },
           {
             targetType: "ChatMessage",

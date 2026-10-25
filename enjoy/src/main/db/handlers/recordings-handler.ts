@@ -204,7 +204,7 @@ class RecordingsHandler {
       ],
       where,
     })
-      .then((stats) => {
+      .then((stats): ReturnType<Recording["toJSON"]> | [] => {
         if (!stats) {
           return [];
         }

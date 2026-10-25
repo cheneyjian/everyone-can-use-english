@@ -6,6 +6,10 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 declare module "foliate-js/view.js";
 declare module "foliate-js/epub.js";
 declare module "compromise-paragraphs";
+declare module "intl-tel-input/intlTelInputWithUtils" {
+  import intlTelInput from "intl-tel-input";
+  export default intlTelInput;
+}
 
 declare module "segment" {
   class Segment {
