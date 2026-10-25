@@ -10,6 +10,7 @@ import Home from "./pages/home";
 import PronunciationAssessmentsIndex from "./pages/pronunciation-assessments/index";
 import PronunciationAssessmentsNew from "./pages/pronunciation-assessments/new";
 import Practice from "./pages/practice";
+import Julebu from "./pages/julebu";
 import { ProtectedPage } from "./pages/protected-page";
 
 export default createHashRouter([
@@ -56,6 +57,14 @@ export default createHashRouter([
         element: (
           <ProtectedPage>
             <PronunciationAssessmentsNew />
+          </ProtectedPage>
+        ),
+      },
+      {
+        path: "/julebu",
+        element: (
+          <ProtectedPage>
+            <Julebu />
           </ProtectedPage>
         ),
       },

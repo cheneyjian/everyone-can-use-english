@@ -25,6 +25,7 @@ import {
   ChevronsUpDownIcon,
   LogOutIcon,
   CreditCardIcon,
+  Gamepad2Icon,
 } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { t } from "i18next";
@@ -125,6 +126,16 @@ export const Sidebar = (props: {
               active={activeTab.startsWith("/pronunciation_assessments")}
               Icon={SpeechIcon}
               testid="sidebar-pronunciation-assessments"
+              isCollapsed={isCollapsed}
+            />
+
+            <SidebarItem
+              href="/julebu"
+              label={t("sidebar.julebu")}
+              tooltip={t("sidebar.julebu")}
+              active={activeTab.startsWith("/julebu")}
+              Icon={Gamepad2Icon}
+              testid="sidebar-julebu"
               isCollapsed={isCollapsed}
             />
 

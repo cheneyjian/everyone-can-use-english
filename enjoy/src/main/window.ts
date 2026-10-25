@@ -366,6 +366,7 @@ ${log}
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       spellcheck: false,
+      webviewTag: true,
     },
     frame: false,
     titleBarStyle: "hidden",
@@ -443,6 +444,20 @@ ${log}
   ipcMain.handle("window-close", () => {
     app.quit();
   });
+
+  // Only allow embedding trusted sites, and never expose our preload to them
+  mainWindow.webContents.on(
+    "will-attach-webview",
+    (event, webPreferences, params) => {
+      delete webPreferences.preload;
+      webPreferences.nodeIntegration = false;
+      webPreferences.contextIsolation = true;
+
+      if (!params.src.startsWith("https://julebu.co/")) {
+        event.preventDefault();
+      }
+    }
+  );
 
   mainWindow.webContents.setWindowOpenHandler(() => {
     return { action: "allow" };
