@@ -107,7 +107,7 @@ const Activity = (props: {
 
         {activity.targetType === "Audio" && (
           <Link
-            to={`/audios/${activity.targetId}`}
+            to={`/practice/audio/${activity.targetId}`}
             className="max-w-[18rem] truncate text-blue-700"
           >
             {(activity.target as AudioType).name}
@@ -116,7 +116,7 @@ const Activity = (props: {
 
         {activity.targetType === "Video" && (
           <Link
-            to={`/videos/${activity.targetId}`}
+            to={`/practice/video/${activity.targetId}`}
             className="max-w-[18rem] truncate text-blue-700"
           >
             {(activity.target as AudioType).name}

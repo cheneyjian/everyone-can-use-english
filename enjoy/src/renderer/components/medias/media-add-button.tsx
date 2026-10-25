@@ -23,11 +23,8 @@ import {
 } from "@renderer/context";
 import { useNavigate } from "react-router-dom";
 
-export const MediaAddButton = (props: {
-  type?: "Audio" | "Video";
-  navigateTo?: (media: AudioType | VideoType) => string;
-}) => {
-  const { type = "Audio", navigateTo } = props;
+export const MediaAddButton = (props: { type?: "Audio" | "Video" }) => {
+  const { type = "Audio" } = props;
   const { EnjoyApp } = useContext(AppSettingsProviderContext);
   const { addDblistener, removeDbListener } = useContext(DbProviderContext);
   const [uri, setUri] = useState("");
@@ -104,11 +101,7 @@ export const MediaAddButton = (props: {
         .create(uri, { compressing })
         .then((media) => {
           toast.success(t("resourceAdded"));
-          navigate(
-            navigateTo
-              ? navigateTo(media)
-              : `/${type.toLowerCase()}s/${media.id}`
-          );
+          navigate(`/practice/${type.toLowerCase()}/${media.id}`);
         })
         .catch((err) => {
           toast.error(err.message);
